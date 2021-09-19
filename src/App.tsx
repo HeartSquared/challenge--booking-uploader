@@ -4,8 +4,14 @@ import './App.css'
 
 const apiUrl = 'http://localhost:3001'
 
+type Booking = {
+  time: number;
+  duration: number;
+  userId: string;
+}
+
 export const App = () => {
-  const [bookings, setBookings] = useState([])
+  const [bookings, setBookings] = useState<Booking[]>([])
 
   useEffect(() => {
     fetch(`${apiUrl}/bookings`)
@@ -13,7 +19,7 @@ export const App = () => {
       .then(setBookings)
   }, [])
 
-  const onDrop = (files) => {
+  const onDrop = (files: File[]) => {
     console.log(files)
   }
 
