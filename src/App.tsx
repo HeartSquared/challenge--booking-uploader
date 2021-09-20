@@ -1,51 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import Dropzone from 'react-dropzone';
-import csvParse from 'csv-parse';
+import { readAndParseFiles } from './services/fileParser';
+import { Booking, NewBookingRecord } from './types';
 import './App.css';
 
 const apiUrl = 'http://localhost:3001';
 
-type Booking = {
-  time: number;
-  duration: number;
-  userId: string;
-};
-
-const isBooking = (record: Record<string, unknown>): record is Booking =>
-  record.time !== undefined && record.duration !== undefined && record.userId !== undefined;
-
-const hasInvalidBooking = (records: Record<string, unknown>[]): boolean => records.some((record) => !isBooking(record));
-
 export const App: React.VFC = () => {
-  const [bookings, setBookings] = useState<Booking[]>([]);
-  const [newBookings, setNewBookings] = useState<Booking[]>();
+  const [existingBookings, setExistingBookings] = useState<Booking[]>([]);
+  const [newBookingRecords, setNewBookingRecords] = useState<NewBookingRecord[]>();
 
   useEffect(() => {
     fetch(`${apiUrl}/bookings`)
       .then((response) => response.json())
-      .then(setBookings);
+      .then(setExistingBookings);
   }, []);
 
-  const onDrop = (files: File[]) => {
-    let receivedBookings: Booking[] = [];
+  const onDrop = (files: File[]) => readAndParseFiles(files, setNewBookingRecords);
 
-    files.forEach((file, index) => {
-      const reader = new FileReader();
-      reader.onload = ({ target }) => {
-        if (typeof target?.result === 'string') {
-          csvParse(target.result, { delimiter: ', ', columns: true }, (error, records) => {
-            if (error) return alert('Error reading file');
-            if (hasInvalidBooking(records)) return alert('Invalid data provided');
-
-            receivedBookings = receivedBookings.concat(records);
-
-            if (files.length === index + 1) setNewBookings(receivedBookings);
-          });
-        }
-      };
-      reader.readAsText(file);
-    });
-  };
+  const bookings = existingBookings;
 
   return (
     <div className="App">
