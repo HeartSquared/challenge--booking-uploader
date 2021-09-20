@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Dropzone from 'react-dropzone';
+import csvParse from 'csv-parse';
 import './App.css';
 
 const apiUrl = 'http://localhost:3001';
@@ -10,8 +11,14 @@ type Booking = {
   userId: string;
 };
 
-export const App = () => {
+const isBooking = (record: Record<string, unknown>): record is Booking =>
+  record.time !== undefined && record.duration !== undefined && record.userId !== undefined;
+
+const hasInvalidBooking = (records: Record<string, unknown>[]): boolean => records.some((record) => !isBooking(record));
+
+export const App: React.VFC = () => {
   const [bookings, setBookings] = useState<Booking[]>([]);
+  const [newBookings, setNewBookings] = useState<Booking[]>();
 
   useEffect(() => {
     fetch(`${apiUrl}/bookings`)
@@ -20,7 +27,24 @@ export const App = () => {
   }, []);
 
   const onDrop = (files: File[]) => {
-    console.log(files);
+    let receivedBookings: Booking[] = [];
+
+    files.forEach((file, index) => {
+      const reader = new FileReader();
+      reader.onload = ({ target }) => {
+        if (typeof target?.result === 'string') {
+          csvParse(target.result, { delimiter: ', ', columns: true }, (error, records) => {
+            if (error) return alert('Error reading file');
+            if (hasInvalidBooking(records)) return alert('Invalid data provided');
+
+            receivedBookings = receivedBookings.concat(records);
+
+            if (files.length === index + 1) setNewBookings(receivedBookings);
+          });
+        }
+      };
+      reader.readAsText(file);
+    });
   };
 
   return (
