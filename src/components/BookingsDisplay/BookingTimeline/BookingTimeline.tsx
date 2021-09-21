@@ -1,13 +1,11 @@
 import React from 'react';
 import { Booking, NewBooking } from '../../../types';
 import { getDurationSpan, getStartTimeOffset } from './utils';
+import { isNewBooking } from '../utils';
 
 type BookingTimelineProps = {
   booking: Booking | NewBooking;
 };
-
-const isNewBooking = (booking: Booking | NewBooking): booking is NewBooking =>
-  (booking as NewBooking).hasConflict !== undefined;
 
 export const BookingTimeline: React.VFC<BookingTimelineProps> = ({ booking }) => (
   <div
