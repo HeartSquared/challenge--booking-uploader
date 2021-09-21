@@ -7,6 +7,12 @@ type BookingTimelineProps = {
   booking: Booking | NewBooking;
 };
 
+enum Colour {
+  Existing = '#3b9cef',
+  New = '#49c374',
+  Conflict = '#bf5b5b',
+}
+
 export const BookingTimeline: React.VFC<BookingTimelineProps> = ({ booking }) => (
   <div
     style={{
@@ -21,7 +27,7 @@ export const BookingTimeline: React.VFC<BookingTimelineProps> = ({ booking }) =>
       style={{
         gridColumnStart: getStartTimeOffset(booking.time),
         gridColumnEnd: `span ${getDurationSpan(booking.duration)}`,
-        backgroundColor: isNewBooking(booking) ? '#49c374' : '#3b9cef',
+        backgroundColor: isNewBooking(booking) ? (booking.hasConflict ? Colour.Conflict : Colour.New) : Colour.Existing,
       }}
     />
   </div>

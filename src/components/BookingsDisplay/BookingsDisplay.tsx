@@ -26,7 +26,7 @@ export const BookingsDisplay: React.VFC<BookingsDisplayProps> = ({ bookings }) =
               return (
                 <div key={i}>
                   <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <p>{isNewBooking(booking) ? 'New' : 'Existing'}</p>
+                    <p>{isNewBooking(booking) ? (booking.hasConflict ? 'New - conflict' : 'New') : 'Existing'}</p>
                     <p>
                       <span style={{ margin: '0 1rem' }}>{date.toString()}</span>
                       <span style={{ margin: '0 1rem' }}>{duration.toFixed(1)}</span>
