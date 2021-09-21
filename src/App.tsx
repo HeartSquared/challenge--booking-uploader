@@ -65,10 +65,10 @@ export const App: React.VFC = () => {
         </Dropzone>
       </div>
       <div className="App-main" style={{ padding: '2rem 3rem' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-          <p>Existing bookings:</p>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <h1>Bookings:</h1>
           {validNewBookings.length !== 0 && (
-            <button type="button" onClick={writeValidBookings}>
+            <button type="button" onClick={writeValidBookings} style={{ padding: '1rem' }}>
               Write valid bookings
             </button>
           )}

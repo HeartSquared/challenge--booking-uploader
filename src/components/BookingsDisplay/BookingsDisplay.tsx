@@ -15,8 +15,18 @@ export const BookingsDisplay: React.VFC<BookingsDisplayProps> = ({ bookings }) =
     <div>
       {Object.keys(sortedAggregatedBookings).map((dateString) => {
         return (
-          <div key={dateString} style={{ display: 'flex', flexDirection: 'column' }}>
-            <p style={{ alignSelf: 'flex-start', margin: '2rem 0 0', fontSize: '1.5em' }}>
+          <div
+            key={dateString}
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              border: 'solid 1px #999',
+              borderRadius: '4px',
+              padding: '1rem',
+              margin: '1rem 0',
+            }}
+          >
+            <p style={{ alignSelf: 'flex-start', margin: '0', fontSize: '1.5em' }}>
               <strong>{dateString}</strong>
             </p>
 
