@@ -4,6 +4,10 @@ export type Booking = {
   userId: string;
 };
 
+export type NewBooking = Booking & {
+  hasConflict: boolean;
+};
+
 export type NewBookingRecord = {
   time: string;
   duration: string;

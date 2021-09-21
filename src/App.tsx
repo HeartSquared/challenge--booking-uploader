@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Dropzone from 'react-dropzone';
+import { identifyBookingConflicts } from './services/bookingConflictChecker';
 import { readAndParseFiles } from './services/fileParser';
 import { Booking, NewBookingRecord } from './types';
 import './App.css';
@@ -18,7 +19,9 @@ export const App: React.VFC = () => {
 
   const onDrop = (files: File[]) => readAndParseFiles(files, setNewBookingRecords);
 
-  const bookings = existingBookings;
+  const bookings = newBookingRecords
+    ? [...existingBookings, ...identifyBookingConflicts(existingBookings, newBookingRecords)]
+    : existingBookings;
 
   return (
     <div className="App">
