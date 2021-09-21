@@ -12,7 +12,7 @@ export const BookingsDisplay: React.VFC<BookingsDisplayProps> = ({ bookings }) =
   const sortedAggregatedBookings = sortAggregatedBookings(aggregatedBookings);
 
   return (
-    <div style={{ padding: '0 3rem' }}>
+    <div>
       {Object.keys(sortedAggregatedBookings).map((dateString) => {
         return (
           <div key={dateString} style={{ display: 'flex', flexDirection: 'column' }}>

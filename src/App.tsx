@@ -13,6 +13,7 @@ export const App: React.VFC = () => {
   const [existingBookings, setExistingBookings] = useState<Booking[]>([]);
   const [newBookingRecords, setNewBookingRecords] = useState<NewBookingRecord[]>();
   const [newBookings, setNewBookings] = useState<NewBooking[]>();
+  const [validNewBookings, setValidNewBookings] = useState<Booking[]>([]);
 
   useEffect(() => {
     fetch(`${apiUrl}/bookings`)
@@ -23,26 +24,27 @@ export const App: React.VFC = () => {
   useEffect(() => {
     if (newBookingRecords) {
       const newBookingsWithConflictStatus = identifyBookingConflicts(existingBookings, newBookingRecords);
-
-      const validBookingsToWrite = filterAndTransformNewBookingsToWrite(newBookingsWithConflictStatus);
-
-      if (validBookingsToWrite) {
-        const writeNewNonConflictingBookings = async () => {
-          const requestOptions = {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(validBookingsToWrite),
-          };
-
-          await fetch(`${apiUrl}/add-bookings`, requestOptions);
-
-          setNewBookings(newBookingsWithConflictStatus);
-        };
-
-        writeNewNonConflictingBookings();
-      }
+      setNewBookings(newBookingsWithConflictStatus);
+      setValidNewBookings(filterAndTransformNewBookingsToWrite(newBookingsWithConflictStatus));
     }
   }, [newBookingRecords]);
+
+  const writeValidBookings = async () => {
+    if (validNewBookings.length) {
+      const requestOptions = {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(validNewBookings),
+      };
+
+      const response = await fetch(`${apiUrl}/add-bookings`, requestOptions);
+      const data = await response.json();
+
+      setNewBookings(undefined);
+      setValidNewBookings([]);
+      setExistingBookings(data);
+    }
+  };
 
   const onDrop = (files: File[]) => readAndParseFiles(files, setNewBookingRecords);
 
@@ -62,8 +64,15 @@ export const App: React.VFC = () => {
           )}
         </Dropzone>
       </div>
-      <div className="App-main">
-        <p>Existing bookings:</p>
+      <div className="App-main" style={{ padding: '2rem 3rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+          <p>Existing bookings:</p>
+          {validNewBookings.length !== 0 && (
+            <button type="button" onClick={writeValidBookings}>
+              Write valid bookings
+            </button>
+          )}
+        </div>
         <BookingsDisplay bookings={bookings} />
       </div>
     </div>
